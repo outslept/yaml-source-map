@@ -1,0 +1,10 @@
+{
+  "extends": ["github>outslept/renovate"],
+  "packageRules": [
+    {
+      "groupName": "typescript",
+      "matchPackageNames": ["typescript"]
+    }
+  ],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json"
+}
