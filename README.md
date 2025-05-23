@@ -1,5 +1,7 @@
 # yaml-source-map-x
 
+Experiments with replacting the unmaintained [`yaml-source-map`](https://www.npmjs.com/package/yaml-source-map) library.
+
 ## Quick Start
 
 ```typescript
