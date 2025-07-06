@@ -22,8 +22,8 @@
   },
   "author": "outslept",
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
+    "build": "tsdown src/yaml-source-map.ts",
+    "dev": "tsdown src/yaml-source-map.ts --watch",
     "lint": "eslint",
     "lint:fix": "pnpm run lint --fix",
     "test": "vitest",
@@ -37,16 +37,17 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "ansis": "^4.0.0",
+    "ansis": "^4.1.0",
+    "picocolors": "^1.1.1",
     "yaml": "^2.8.0"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.4",
     "@sxzz/eslint-config": "^7.0.1",
+    "@types/node": "^24.0.10",
     "bumpp": "^10.1.1",
     "eslint": "^9.27.0",
     "lint-staged": "^16.0.0",
-    "publint": "^0.3.12",
     "simple-git-hooks": "^2.13.0",
     "tsdown": "^0.12.2",
     "typescript": "^5.8.3",
