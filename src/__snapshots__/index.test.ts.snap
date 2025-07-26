@@ -1,0 +1,180 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`YamlSourceMap > creates error 'nested path' 1`] = `
+{
+  "code": "UNEXPECTED_TOKEN",
+  "hasLocation": true,
+  "lineNumber": 3,
+  "message": "Invalid username format",
+  "position": [
+    39,
+    39,
+  ],
+}
+`;
+
+exports[`YamlSourceMap > creates error 'no path' 1`] = `
+{
+  "code": "UNEXPECTED_TOKEN",
+  "hasLocation": false,
+  "lineNumber": undefined,
+  "message": "General error",
+  "position": [
+    0,
+    0,
+  ],
+}
+`;
+
+exports[`YamlSourceMap > creates error 'nonexistent path' 1`] = `
+{
+  "code": "UNEXPECTED_TOKEN",
+  "hasLocation": false,
+  "lineNumber": undefined,
+  "message": "Path does not exist",
+  "position": [
+    0,
+    0,
+  ],
+}
+`;
+
+exports[`YamlSourceMap > creates error 'valid path' 1`] = `
+{
+  "code": "UNEXPECTED_TOKEN",
+  "hasLocation": true,
+  "lineNumber": 2,
+  "message": "Invalid port value",
+  "position": [
+    16,
+    16,
+  ],
+}
+`;
+
+exports[`YamlSourceMap > formats error with code context like IDE 1`] = `
+[
+  {
+    "context": "    3 | database:
+    4 |   host: "localhost"
+>   5 |   port: "invalid_port"
+                   ^
+    6 |   timeout: -5
+    7 | config:",
+    "location": "5:9",
+    "message": "Port must be numeric",
+    "path": "database.port",
+  },
+  {
+    "context": "    4 |   host: "localhost"
+    5 |   port: "invalid_port"
+>   6 |   timeout: -5
+                      ^
+    7 | config:
+    8 |   servers:",
+    "location": "6:12",
+    "message": "Timeout cannot be negative",
+    "path": "database.timeout",
+  },
+  {
+    "context": "    8 |   servers:
+    9 |     - name: "web-01"
+>  10 |       memory: "bad_format"
+                         ^
+   11 |     - name: "web-02"
+   12 |       cpu: "invalid"",
+    "location": "10:15",
+    "message": "Invalid memory format",
+    "path": "config.servers.0.memory",
+  },
+  {
+    "context": "   10 |       memory: "bad_format"
+   11 |     - name: "web-02"
+>  12 |       cpu: "invalid"
+                      ^",
+    "location": "12:12",
+    "message": "Invalid CPU specification",
+    "path": "config.servers.1.cpu",
+  },
+]
+`;
+
+exports[`YamlSourceMap > handles 'source text with length' 1`] = `
+{
+  "hasLength": true,
+  "isTruncated": true,
+  "path": "foo",
+  "sourceText": ""test",
+}
+`;
+
+exports[`YamlSourceMap > handles 'source text without length' 1`] = `
+{
+  "hasLength": false,
+  "isTruncated": true,
+  "path": "foo",
+  "sourceText": ""test value"",
+}
+`;
+
+exports[`YamlSourceMap > handles document with null content 1`] = `
+{
+  "data": null,
+  "pathCount": 0,
+  "paths": [],
+}
+`;
+
+exports[`YamlSourceMap > handles empty document 1`] = `
+{
+  "data": null,
+  "pathCount": 0,
+  "paths": [],
+}
+`;
+
+exports[`YamlSourceMap > parses 'arrays' correctly 1`] = `
+{
+  "data": {
+    "items": [
+      {
+        "name": "alpha",
+        "value": 100,
+      },
+      {
+        "name": "beta",
+        "value": 200,
+      },
+    ],
+  },
+  "pathCount": 8,
+  "paths": [
+    "",
+    "items",
+    "items.0",
+    "items.0.name",
+    "items.0.value",
+    "items.1",
+    "items.1.name",
+    "items.1.value",
+  ],
+}
+`;
+
+exports[`YamlSourceMap > parses 'nested objects' correctly 1`] = `
+{
+  "data": {
+    "foo": {
+      "bar": "value",
+      "baz": 42,
+    },
+  },
+  "pathCount": 4,
+  "paths": [
+    "",
+    "foo",
+    "foo.bar",
+    "foo.baz",
+  ],
+}
+`;
