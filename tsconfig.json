@@ -3,14 +3,18 @@
     "target": "ESNext",
     "lib": ["ESNext"],
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "outDir": "./dist",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
-    "noEmit": true,
+    "declaration": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
-  }
+  },
+  "include": [
+    "src/index.ts"
+  ]
 }
