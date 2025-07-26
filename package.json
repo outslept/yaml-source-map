@@ -1,5 +1,5 @@
 {
-  "name": "yaml-source-map-x",
+  "name": "yaml-source-map",
   "version": "0.0.0",
   "packageManager": "pnpm@10.10.0",
   "type": "module",
@@ -12,13 +12,13 @@
     "ast"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/outslept/yaml-source-map-x#readme",
+  "homepage": "https://github.com/outslept/yaml-source-map#readme",
   "bugs": {
-    "url": "https://github.com/outslept/yaml-source-map-x/issues"
+    "url": "https://github.com/outslept/yaml-source-map/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/outslept/yaml-source-map-x.git"
+    "url": "https://github.com/outslept/yaml-source-map.git"
   },
   "author": "outslept",
    "scripts": {

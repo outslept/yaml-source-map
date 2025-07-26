@@ -1,17 +1,15 @@
-# yaml-source-map-x
+# yaml-source-map
 
 TypeScript library for parsing YAML with source location tracking.
 
 ## Installation
 
-```sh
-unpublished
-```
+> This is a WIP.
 
 ## Quick Start
 
 ```typescript
-import { YamlSourceMap } from 'yaml-source-map-x';
+import { YamlSourceMap } from 'yaml-source-map';
 
 const yaml = `
 database:
