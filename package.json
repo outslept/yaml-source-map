@@ -1,48 +1,49 @@
 {
   "name": "yaml-source-map",
   "version": "0.0.0",
-  "packageManager": "pnpm@10.10.0",
-  "type": "module",
   "keywords": [
-    "yaml",
-    "source-map",
-    "parser",
-    "typescript",
+    "ast",
     "node",
-    "ast"
+    "parser",
+    "source-map",
+    "typescript",
+    "yaml"
   ],
-  "license": "MIT",
   "homepage": "https://github.com/outslept/yaml-source-map#readme",
   "bugs": {
     "url": "https://github.com/outslept/yaml-source-map/issues"
   },
+  "license": "MIT",
+  "author": "outslept",
   "repository": {
     "type": "git",
     "url": "https://github.com/outslept/yaml-source-map.git"
   },
-  "author": "outslept",
-   "scripts": {
+  "type": "module",
+  "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "vitest run --reporter=default --coverage",
-    "lint": "eslint --cache --fix",
-    "lint:ci": "eslint --cache"
+    "lint": "oxlint --fix",
+    "lint:ci": "oxlint",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "dependencies": {
-    "yaml": "^2.8.0"
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.4",
-    "@sxzz/eslint-config": "^7.0.1",
-    "@types/node": "^24.0.10",
-    "@vitest/coverage-v8": "3.1.4",
-    "eslint": "^9.27.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.1.4"
+    "@types/node": "^26.6.6",
+    "@vitest/coverage-v8": "5.1.1",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "pnpm@12.21.0"
 }
