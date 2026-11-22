@@ -1,80 +1,64 @@
 # yaml-source-map
 
-TypeScript library for parsing YAML with source location tracking.
+Parse YAML with source location tracking (`line`, `column`, `position`, `endPosition`) for schema validation and CLI diagnostics.
 
-## Installation
+## Usage
 
-> This is a WIP.
+```ts
+import { YamlSourceMap } from "yaml-source-map";
 
-## Quick Start
-
-```typescript
-import { YamlSourceMap } from 'yaml-source-map';
-
-const yaml = `
-database:
+const yaml = `database:
   host: localhost
   port: 5432
   credentials:
-    username: admin
-    password: secret
-`;
+    username: admin`;
 
 const { data, sourceMap } = YamlSourceMap.parseWithSourceMap(yaml);
 
-console.log(data.database.host); // "localhost"
-
-const location = sourceMap.lookup('database.port');
-console.log(`Port at line ${location.line}, column ${location.column}`);
-// Output: Port at line 4, column 9
+// Lookup by dot-separated string or path array (e.g. from Zod / Standard Schema issues)
+const loc = sourceMap.lookup(["database", "port"]);
+// { line: 3, column: 9, position: 32, endPosition: 36 }
 ```
 
 ## Error Reporting
 
-```typescript
+```ts
 const { sourceMap } = YamlSourceMap.parseWithSourceMap(yaml);
 
-const error = sourceMap.createError('Invalid port value', 'database.port');
+const loc = sourceMap.lookup("database.port")!;
+const lineText = sourceMap.getLineText(loc.line);
+const underline = " ".repeat(loc.column - 1) + "^".repeat(loc.endPosition - loc.position);
 
-const location = sourceMap.lookup('database.port');
-const lineText = sourceMap.getLineText(location.line);
-const pointer = ' '.repeat(location.column - 1) + '^';
-
-console.log(`Line ${location.line}: ${lineText}`);
-console.log(`       ${pointer}`);
+console.log(`${loc.line} | ${lineText}`);
+console.log(`  | ${underline}`);
 ```
 
 ## API
 
-### YamlSourceMap.parseWithSourceMap(yaml)
+### `YamlSourceMap.parseWithSourceMap<T>(yaml: string, options?: ParseOptions)`
 
-Parse YAML and create source map.
+Parses a YAML string and builds its source map.
+Returns `{ document, sourceMap, data: T }`.
 
-Returns: `{ document, sourceMap, data }`
+### `sourceMap.lookup(path: string | readonly (string | number)[]): SourceLocation | undefined`
 
-### sourceMap.lookup(path)
+Returns `{ line, column, position, endPosition }` (`1`-based `line` and `column`, `0`-based character offsets) or `undefined`.
 
-Find source location for a path.
+### `sourceMap.getPaths(): string[]`
 
-Returns: `{ line, column, position }` or `undefined`
+Returns all mapped dot-separated paths in sorted order.
 
-### sourceMap.getPaths()
+### `sourceMap.getSourceText(location: SourceLocation, length?: number): string`
 
-Get all paths in the document.
+Extracts the node's source text (`position..endPosition`), or `length` characters starting at `location.position`.
 
-Returns: `string[]`
+### `sourceMap.getLineText(lineNumber: number): string`
 
-### sourceMap.getSourceText(location, length?)
+Returns the text of the `1`-based line without trailing newline characters.
 
-Extract source text from location.
+### `sourceMap.createError(message: string, path?: string | readonly (string | number)[]): YAMLParseError`
 
-### sourceMap.getLineText(lineNumber)
-
-Get complete line text.
-
-### sourceMap.createError(message, path?)
-
-Create YAML parse error with location.
+Creates a `YAMLParseError` pointing to the token range `[position, endPosition]` (or `[0, 0]` if not found).
 
 ## License
 
