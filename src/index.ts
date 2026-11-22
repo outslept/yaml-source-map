@@ -12,17 +12,23 @@ import {
   type ParseOptions as YamlParseOptions,
   type DocumentOptions,
   type SchemaOptions,
-} from 'yaml';
+} from "yaml";
 
 export interface SourceLocation {
   readonly line: number;
   readonly column: number;
   readonly position: number;
+  readonly endPosition: number;
 }
 
+export type PathInput = string | readonly (string | number)[];
+
 export interface ParseOptions extends YamlParseOptions, DocumentOptions, SchemaOptions {
-  readonly keepSourceTokens?: boolean;
   readonly lineCounter?: LineCounter;
+}
+
+function normalizePath(path: PathInput): string {
+  return typeof path === "string" ? path : path.join(".");
 }
 
 export class YamlSourceMap {
@@ -36,83 +42,86 @@ export class YamlSourceMap {
     this.lineCounter = options.lineCounter ?? new LineCounter();
   }
 
-  static parseWithSourceMap(yamlSource: string, options?: ParseOptions) {
+  static parseWithSourceMap<T = unknown>(yamlSource: string, options?: ParseOptions) {
     const sourceMap = new YamlSourceMap(yamlSource, options);
     const document = sourceMap.parseDocument(options);
     return {
       document,
       sourceMap,
-      data: document.toJS()
+      data: document.toJS() as T,
     };
   }
 
   parseDocument(options: ParseOptions = {}): YamlDocument {
     const doc = parseYamlDocument(this.source, {
-      keepSourceTokens: true,
+      ...options,
       lineCounter: this.lineCounter,
-      ...options
     });
-
     this.buildSourceMap(doc);
     return doc;
   }
 
-  lookup(path: string): SourceLocation | undefined {
-    return this.sourceMap.get(path);
+  lookup(path: PathInput): SourceLocation | undefined {
+    return this.sourceMap.get(normalizePath(path));
   }
 
   getPaths(): string[] {
-    if (!this.cachedPaths) {
-      this.cachedPaths = [...this.sourceMap.keys()].sort();
-    }
-    return this.cachedPaths;
+    return (this.cachedPaths ??= [...this.sourceMap.keys()].sort());
   }
 
   getSourceText(location: SourceLocation, length?: number): string {
-    return this.source.slice(location.position, length != null ? location.position + length : this.source.length);
+    const end = length != null ? location.position + length : location.endPosition;
+    return this.source.slice(location.position, end);
   }
 
   getLineText(lineNumber: number): string {
-    return this.source.split('\n')[lineNumber - 1] ?? '';
+    const starts = this.lineCounter.lineStarts;
+    const idx = lineNumber - 1;
+    if (idx < 0 || idx >= starts.length) return "";
+    const start = starts[idx]!;
+    const nextStart = starts[idx + 1] ?? this.source.length;
+    return this.source.slice(start, nextStart).replace(/\r?\n$/, "");
   }
 
-  createError(message: string, path?: string): YAMLParseError {
-    const location = path ? this.lookup(path) : undefined;
-    return new YAMLParseError(location ? [location.position, location.position] : [0, 0], 'UNEXPECTED_TOKEN', message);
+  createError(message: string, path?: PathInput): YAMLParseError {
+    const loc = path != null ? this.lookup(path) : undefined;
+    return new YAMLParseError(
+      loc ? [loc.position, loc.endPosition] : [0, 0],
+      "UNEXPECTED_TOKEN",
+      message,
+    );
   }
 
   private buildSourceMap(doc: YamlDocument): void {
     this.sourceMap.clear();
     this.cachedPaths = undefined;
-
     if (doc.contents) {
-      this.traverseNode(doc.contents, []);
+      this.traverseNode(doc.contents, "");
     }
   }
 
-  private traverseNode(node: Node, path: (string | number)[]): void {
+  private traverseNode(node: Node, prefix: string): void {
     if (!node.range) return;
-
-    const linePos = this.lineCounter.linePos(node.range[0]);
-    this.sourceMap.set(path.join('.'), {
-      line: linePos.line,
-      column: linePos.col,
-      position: node.range[0]
+    const pos = this.lineCounter.linePos(node.range[0]);
+    this.sourceMap.set(prefix, {
+      line: pos.line,
+      column: pos.col,
+      position: node.range[0],
+      endPosition: node.range[1],
     });
 
     if (isMap(node)) {
       for (const pair of node.items) {
-        if (isPair(pair) && pair.key && isScalar(pair.key) && pair.value && isNode(pair.value)) {
-          const keyValue = pair.key.value;
-          if (keyValue != null) {
-            this.traverseNode(pair.value, [...path, String(keyValue)]);
-          }
+        if (isPair(pair) && isScalar(pair.key) && pair.key.value != null && isNode(pair.value)) {
+          const key = String(pair.key.value);
+          this.traverseNode(pair.value, prefix ? `${prefix}.${key}` : key);
         }
       }
     } else if (isSeq(node)) {
-      for (const [index, item] of node.items.entries()) {
-        if (item && isNode(item)) {
-          this.traverseNode(item, [...path, index]);
+      for (let i = 0; i < node.items.length; i++) {
+        const item = node.items[i];
+        if (isNode(item)) {
+          this.traverseNode(item, prefix ? `${prefix}.${i}` : String(i));
         }
       }
     }
